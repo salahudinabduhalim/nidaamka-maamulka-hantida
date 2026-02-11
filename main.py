@@ -44,9 +44,14 @@ def on_startup():
         session.commit()
 
 # --- Serve Static Files ---
-# Mount the parent directory to serve frontend files
-# Note: In a production environment with a dedicated static folder, you'd point to that.
-static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if os.path.exists(os.path.join(current_dir, "index.html")):
+    # Flat structure (GitHub/Render)
+    static_dir = current_dir
+else:
+    # Nested structure (Local backend folder)
+    static_dir = os.path.abspath(os.path.join(current_dir, ".."))
+
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 @app.get("/")

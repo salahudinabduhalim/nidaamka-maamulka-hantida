@@ -5,9 +5,10 @@ import os
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
-    # Fallback to SQLite for local development/testing if no URL provided
-    sqlite_file_name = "test_warehouse.db"
-    DATABASE_URL = f"sqlite:///backend/{sqlite_file_name}"
+    # Fallback to SQLite for local development
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(current_dir, "test_warehouse.db")
+    DATABASE_URL = f"sqlite:///{db_path}"
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 else:
     engine = create_engine(DATABASE_URL)
