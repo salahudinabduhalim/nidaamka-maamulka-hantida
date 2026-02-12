@@ -49,7 +49,8 @@
                     </li>
                     <li><a href="#" data-target="outbound"><i class="fa-solid fa-truck-ramp-box"></i> Bixinta Agabka</a>
                     </li>
-                    <li><a href="#" data-target="reports"><i class="fa-solid fa-file-pdf"></i> Warbixinnada PDF</a></li>
+                    <li><a href="#" data-target="reports"><i class="fa-solid fa-file-pdf"></i> Warbixinnada PDF &
+                            Excel</a></li>
                     <li><a href="#" data-target="users"><i class="fa-solid fa-users-gear"></i> Maamulka Users-ka</a>
                     </li>
                     <li><a href="#" data-target="settings"><i class="fa-solid fa-gear"></i> Settings-ka</a></li>
@@ -118,6 +119,14 @@
                     </div>
 
                     <div class="content-grid">
+                        <!-- Alerts & Notifications -->
+                        <div class="alerts-container card">
+                            <h3>Xaqiijinta Sugaysa (Pending Approval)</h3>
+                            <div id="dashboard-verification-list">
+                                <!-- Dynamic Content -->
+                            </div>
+                        </div>
+
                         <!-- Recent Activity -->
                         <div class="recent-activity card">
                             <h3>Dhaqdhaqaaqa Ugu Dambeeyay (Recent Activity)</h3>
@@ -130,20 +139,11 @@
                                         <th>DIWAANGALIYIHA</th>
                                         <th>STATUS</th>
                                     </tr>
-
                                 </thead>
                                 <tbody id="activity-list">
                                     <!-- Dynamic Content -->
                                 </tbody>
                             </table>
-                        </div>
-
-                        <!-- Alerts & Notifications -->
-                        <div class="alerts-container card">
-                            <h3>Xaqiijinta Sugaysa (Pending Approval)</h3>
-                            <div id="dashboard-verification-list">
-                                <!-- Dynamic Content -->
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -224,9 +224,9 @@
 
                 <!-- Reports View -->
                 <div id="view-reports" class="app-view">
-                    <h1 class="page-title">Warbixinnada PDF & Excel</h1>
-                    <div class="content-grid" style="grid-template-columns: 320px 1fr; align-items: start;">
-                        <div class="card" style="padding: 15px;">
+                    <h1 class="page-title">Warbixinnada</h1>
+                    <div class="reports-content-grid">
+                        <div class="card reports-form-card" style="padding: 15px;">
                             <h3 style="margin-bottom: 12px; font-size: 1rem;">Xogta Warbixinta</h3>
                             <input type="hidden" id="report-type" value="movement">
 
@@ -271,10 +271,10 @@
                         </div>
 
                         <!-- Preview Container -->
-                        <div class="card" id="preview-card" style="display: none; min-height: 400px; overflow-x: auto;">
+                        <div class="card" id="preview-card" style="display: none; min-height: 400px;">
                             <div
                                 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                                <h3 style="margin: 0;">Horfiriin (Report Preview)</h3>
+                                <h3 style="margin: 0;">Report Preview</h3>
                                 <button class="btn btn-icon"
                                     onclick="document.getElementById('preview-card').style.display='none'">&times;</button>
                             </div>
@@ -289,10 +289,17 @@
                 <div id="view-users" class="app-view">
                     <div class="section-header">
                         <h1 class="page-title" style="margin:0;">Maamulka Users-ka</h1>
-                        <button id="btn-add-user" class="btn btn-primary hidden"
-                            onclick="openModal('modal-user-edit'); resetUserForm();">
-                            <i class="fa-solid fa-user-plus"></i> Add User
-                        </button>
+                        <div class="header-actions">
+                            <button id="btn-add-user" class="btn btn-primary hidden"
+                                onclick="openModal('modal-user-edit'); resetUserForm();">
+                                <i class="fa-solid fa-user-plus"></i> Add User
+                            </button>
+                            <button id="btn-delete-account" class="btn btn-danger hidden"
+                                style="background-color: var(--red); margin-left: 10px;"
+                                onclick="handleDeleteMyAccount()">
+                                <i class="fa-solid fa-user-slash"></i> Delete Account
+                            </button>
+                        </div>
                     </div>
                     <div class="card">
                         <table class="activity-table">
@@ -508,7 +515,13 @@
                         <option value="Inactive">Inactive</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary full-width">Update User</button>
+                <div class="form-actions-row">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Update User</button>
+                    <button type="button" id="btn-delete-user" class="btn btn-danger hidden" style="flex: 1;"
+                        onclick="handleDeleteSelectedUser()">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                </div>
             </form>
         </div>
     </div>

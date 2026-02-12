@@ -28,6 +28,8 @@
 body {
     background-color: var(--main-bg);
     color: var(--text-primary);
+    overflow: hidden;
+    /* Prevent page-level scroll */
 }
 
 .container {
@@ -49,6 +51,8 @@ body {
     left: 0;
     top: 0;
     overflow-y: auto;
+    /* Allow sidebar scroll if items overflow */
+    z-index: 1000;
 }
 
 
@@ -122,7 +126,8 @@ body {
     display: flex;
     flex-direction: column;
     margin-left: 300px;
-    /* Width of the fixed sidebar */
+    height: 100vh;
+    overflow-y: auto;
 }
 
 
@@ -134,6 +139,9 @@ body {
     justify-content: space-between;
     padding: 0 40px;
     border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 900;
 }
 
 .system-name {
@@ -183,7 +191,13 @@ body {
 }
 
 .dashboard-section {
-    padding: 40px;
+    padding: 30px;
+}
+
+@media screen and (max-width: 1200px) {
+    .dashboard-section {
+        padding: 20px;
+    }
 }
 
 .page-title {
@@ -242,15 +256,32 @@ body {
 /* Content Grid */
 .content-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
+    /* Stack vertically */
     gap: 20px;
+}
+
+@media screen and (max-width: 1200px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .card {
     background-color: white;
     padding: 30px;
+    /* Returned to default padding */
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+    /* Returned to auto for table compatibility */
+    max-width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+    .card {
+        padding: 15px;
+    }
 }
 
 .card h3 {
@@ -274,10 +305,16 @@ body {
     background-color: #f8fafc;
 }
 
+.activity-table th,
+.activity-table td {
+    padding: 12px 15px;
+}
+
 .activity-table td {
     padding: 15px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
 }
 
 .status-out {
@@ -291,6 +328,12 @@ body {
 }
 
 /* Alerts Styling */
+
+.alerts-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
 .alerts-container .alert-item {
     padding: 15px 20px;
     border-radius: 8px;
@@ -424,6 +467,17 @@ body {
     color: white;
 }
 
+.btn-danger {
+    background-color: var(--red);
+    color: white;
+}
+
+.form-actions-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
 .btn:hover {
     opacity: 0.9;
     transform: translateY(-1px);
@@ -542,6 +596,8 @@ body {
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .status-out {
@@ -551,6 +607,8 @@ body {
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
+    white-space: nowrap;
+    display: inline-block;
 }
 
 /* Modal and Permission States */
@@ -710,10 +768,6 @@ body {
         margin-left: 0;
     }
 
-    .top-header {
-        padding: 0 20px;
-    }
-
     .system-name {
         font-size: 0.85rem;
     }
@@ -759,13 +813,6 @@ body {
 @media screen and (max-width: 480px) {
     .stats-grid {
         grid-template-columns: 1fr;
-    }
-
-    .top-header {
-        height: auto;
-        padding: 10px 15px;
-        flex-direction: column;
-        gap: 10px;
     }
 
     .user-profile {
@@ -823,4 +870,28 @@ body {
 
 .sidebar-overlay.active {
     display: block;
+}
+
+/* Reports Specific Layout */
+.reports-content-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+
+#report-preview-container {
+    max-height: calc(100vh - 200px);
+    /* Adjust based on header height */
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Remove horizontal scrollbar */
+}
+
+@media screen and (max-width: 768px) {
+    .reports-content-grid {
+        grid-template-columns: 1fr;
+        /* Stack on mobile */
+    }
 }

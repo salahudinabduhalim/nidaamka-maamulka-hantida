@@ -108,9 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Show User Management actions for Wasiir as requested
         const addBtn = document.getElementById('btn-add-user');
-        if (addBtn) {
-            if (currentUser.role === 'wasiir') addBtn.classList.remove('hidden');
-            else addBtn.classList.add('hidden');
+        const deleteAccBtn = document.getElementById('btn-delete-account');
+        if (currentUser.role.toLowerCase() === 'wasiir') {
+            if (addBtn) addBtn.classList.remove('hidden');
+            if (deleteAccBtn) deleteAccBtn.classList.remove('hidden');
+        } else {
+            if (addBtn) addBtn.classList.add('hidden');
+            if (deleteAccBtn) deleteAccBtn.classList.add('hidden');
         }
 
         userNameDisplay.textContent = currentUser.name;
@@ -130,8 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Dropdown Management ---
     function populateItemDropdowns() {
-        // Inbound: Populate Categories first
-        const categories = [...new Set(masterItems.map(item => item.category))];
+        // Inbound: Populate Categories with normalization (trim and uniqueness)
+        const categories = [...new Set(masterItems.map(item => (item.category || '').trim()))];
         const catOptions = '<option value="" disabled selected>Dooro Qaybta</option>' +
             categories.map(cat => `<option value="${cat}">${cat}</option>`).join('') +
             '<option value="NEW_CATEGORY">+ New Category...</option>';
@@ -197,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             switchView(link.getAttribute('data-target'));
+
 
             // Close sidebar on mobile after clicking a link
             if (window.innerWidth <= 1024) {
@@ -620,28 +625,40 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('in-laptop-brand').removeAttribute('required');
         itemSelect.setAttribute('required', '');
 
+        const lowerCat = catValue.trim().toLowerCase();
+        const isBooks = lowerCat.includes('book');
+        const isElec = lowerCat.includes('electronics') || lowerCat.includes('elektronik');
+
+        console.log('Category Changed:', catValue, 'isBooks:', isBooks); // Debugging
+
         if (catValue === 'NEW_CATEGORY') {
             newCatContainer.style.display = 'block';
             newCatInput.setAttribute('required', '');
             itemSelect.innerHTML = '<option value="" disabled selected>Dooro Agabka</option>' +
                 '<option value="NEW_ITEM">+ New Item...</option>';
-        } else if (catValue === 'Books') {
+        } else if (isBooks) {
             // Immediate Subject/Grade selection for Books
             itemSelectContainer.style.display = 'none';
-            bookFields.style.display = 'block';
-            inItemSelect.value = 'Buug';
+            document.getElementById('dynamic-book-fields-in').style.display = 'block';
+            document.getElementById('dynamic-laptop-fields-in').style.display = 'none';
+
             itemSelect.removeAttribute('required');
             document.getElementById('in-book-subject').setAttribute('required', '');
             document.getElementById('in-book-grade').setAttribute('required', '');
         } else {
             newCatContainer.style.display = 'none';
             newCatInput.removeAttribute('required');
+            document.getElementById('dynamic-book-fields-in').style.display = 'none';
+            if (isElec) {
+                // Keep item select visible for Electronics (Laptops)
+                itemSelectContainer.style.display = 'block';
+            }
 
-            // Filter items by category
-            const filteredItems = masterItems.filter(m => m.category === catValue);
+            // Filter items by category (case-insensitive and trimmed)
+            const filteredItems = masterItems.filter(m => (m.category || '').trim().toLowerCase() === lowerCat);
             const itemOptions = '<option value="" disabled selected>Dooro Agabka</option>' +
                 [...new Set(filteredItems.map(i => i.name))].map(name => `<option value="${name}">${name}</option>`).join('') +
-                (catValue === 'Electronics' ? '<option value="Laptop"> + Add New Laptop Type</option>' : '') +
+                (isElec ? '<option value="Laptop"> + Add New Laptop Type</option>' : '') +
                 '<option value="NEW_ITEM">+ New Item...</option>';
 
             itemSelect.innerHTML = itemOptions;
@@ -753,31 +770,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 2. Determine Item Name
-        if (itemNameSelect === 'NEW_ITEM') {
-            item = document.getElementById('in-new-item-input').value.trim();
-        } else if (itemNameSelect === 'Buug') {
-            let subject = inBookSubject.value;
-            let grade = inBookGrade.value;
+        const lowerCat = category.trim().toLowerCase();
+        const isBooks = lowerCat.includes('book');
+        const isElec = lowerCat.includes('electronics') || lowerCat.includes('elektronik');
+
+        if (isBooks) {
+            let subject = document.getElementById('in-book-subject').value;
+            let grade = document.getElementById('in-book-grade').value;
 
             if (subject === 'NEW_SUBJECT') {
-                subject = inNewSubjectInput.value.trim();
+                subject = document.getElementById('in-new-subject-input').value.trim();
             }
             if (grade === 'NEW_GRADE') {
-                grade = inNewGradeInput.value.trim();
+                grade = document.getElementById('in-new-grade-input').value.trim();
             }
 
-            item = `${subject} ${grade}`;
-            category = category === 'NEW_CATEGORY' ? category : (category || 'Books');
-        } else if (itemNameSelect === 'Laptop') {
+            if (subject && grade) {
+                item = `${subject} ${grade}`;
+            }
+        } else if (isElec && itemNameSelect === 'Laptop') {
             const brand = document.getElementById('in-laptop-brand').value;
             item = `${brand} Laptop`;
-            category = category === 'NEW_CATEGORY' ? category : (category || 'Electronics');
+        } else if (itemNameSelect === 'NEW_ITEM') {
+            item = document.getElementById('in-new-item-input').value.trim();
         } else {
             item = itemNameSelect;
         }
 
         if (!item || !category) {
-            showToast('Fadlan buuxi dhammaan meelaha loo baahanyahay!', 'error');
+            showToast('Fadlan buuxi dhammaan meelaha loo baahanyahay! (Missing: ' + (!item ? 'Item' : 'Category') + ')', 'error');
             return;
         }
 
@@ -851,11 +872,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</td>
                 <td><span class="${user.status === 'Active' ? 'status-in' : 'status-out'}">${user.status}</span></td>
                 <td>
-                    ${currentUser.role === 'wasiir' ? `<button class="btn-icon" onclick="openUserEditModal(${index})"><i class="fa-solid fa-pen"></i></button>` : '<i class="fa-solid fa-lock"></i>'}
+                    ${(currentUser.role.toLowerCase() === 'wasiir') ?
+                '<button class="btn-icon" onclick="openUserEditModal(' + index + ')" title="Edit" style="margin-right: 8px;"><i class="fa-solid fa-pen"></i></button>' +
+                '<button class="btn-icon" onclick="deleteUser(' + index + ')" title="Delete" style="color: #ef4444;"><i class="fa-solid fa-trash"></i></button>'
+                : '<i class="fa-solid fa-lock" title="No Permission"></i>'}
                 </td>
             </tr>
         `).join('');
     }
+
+    window.deleteUser = async (index) => {
+        const user = masterUsers[index];
+
+        // Prevent self-deletion
+        if (user.username === currentUser.username) {
+            showToast("Ma tirtiri kartid account-kaaga adigu leedahay!", "error");
+            return;
+        }
+
+        if (confirm(`Ma hubtaa inaad rabto inaad tirtirto user-ka: ${user.name}?`)) {
+            try {
+                const response = await apiFetch(`/users/${user.username}`, {
+                    method: 'DELETE'
+                });
+
+                if (response && response.status === 'success') {
+                    masterUsers.splice(index, 1);
+                    showToast("User-ka waa la tirtiray.", "success");
+                    renderUsers();
+                } else {
+                    showToast("Cillad ayaa dhacday markii user-ka la tirtirayay.", "error");
+                }
+            } catch (err) {
+                console.error('Delete user error:', err);
+                showToast("Cillad ayaa dhacday markii user-ka la tirtirayay.", "error");
+            }
+        }
+    };
 
     window.resetUserForm = () => {
         document.getElementById('edit-user-index').value = '';
@@ -865,7 +918,30 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('edit-user-role').value = 'storekeeper';
         document.getElementById('edit-user-status').value = 'Active';
         document.querySelector('#modal-user-edit h2').textContent = 'Kudar User Cusub';
-        document.querySelector('#form-user-edit button').textContent = 'Add User';
+        document.querySelector('#form-user-edit button[type="submit"]').textContent = 'Add User';
+
+        // Hide delete button when adding new
+        const deleteBtn = document.getElementById('btn-delete-user');
+        if (deleteBtn) deleteBtn.classList.add('hidden');
+    };
+
+    window.handleDeleteMyAccount = () => {
+        const myIndex = masterUsers.findIndex(u => u.username === currentUser.username);
+        if (myIndex !== -1) {
+            if (confirm("Ma hubtaa inaad rabto inaad tirtirto account-kaaga? Tallaabadan dib looma soo celin karo!")) {
+                masterUsers.splice(myIndex, 1);
+                showToast("Account-kaagii waa la tirtiray.", "success");
+                setTimeout(() => window.logout(), 1500); // Logout after deletion
+            }
+        }
+    };
+
+    window.handleDeleteSelectedUser = async () => {
+        const index = document.getElementById('edit-user-index').value;
+        if (index !== '') {
+            await deleteUser(index);
+            closeModal('modal-user-edit');
+        }
     };
 
     window.openUserEditModal = (index) => {
@@ -877,39 +953,66 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('edit-user-role').value = user.role;
         document.getElementById('edit-user-status').value = user.status;
         document.querySelector('#modal-user-edit h2').textContent = 'Bedel Xogta User-ka';
-        document.querySelector('#form-user-edit button').textContent = 'Update User';
+        document.querySelector('#form-user-edit button[type="submit"]').textContent = 'Update User';
+
+        // Show delete button for existing users (if not self)
+        const deleteBtn = document.getElementById('btn-delete-user');
+        if (deleteBtn) {
+            if (user.username === currentUser.username) {
+                deleteBtn.classList.add('hidden');
+            } else {
+                deleteBtn.classList.remove('hidden');
+            }
+        }
+
         openModal('modal-user-edit');
     };
 
-    document.getElementById('form-user-edit').addEventListener('submit', (e) => {
+    document.getElementById('form-user-edit').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const index = document.getElementById('edit-user-index').value;
+        const indexInput = document.getElementById('edit-user-index').value;
         const name = document.getElementById('edit-user-name').value;
         const username = document.getElementById('edit-user-username').value;
         const password = document.getElementById('edit-user-password').value;
         const role = document.getElementById('edit-user-role').value;
         const status = document.getElementById('edit-user-status').value;
 
-        if (index !== '') {
-            // Update existing
-            masterUsers[index].name = name;
-            masterUsers[index].username = username;
-            masterUsers[index].role = role;
-            masterUsers[index].status = status;
-            if (password) masterUsers[index].password = password;
-        } else {
-            // Add new
-            if (!password) {
-                showToast('Fadlan gali password-ka user-ka cusub!', 'error');
-                return;
-            }
-            masterUsers.push({
-                username, password, name, role, status
-            });
-        }
+        try {
+            if (indexInput !== '') {
+                // Update existing
+                const index = parseInt(indexInput);
+                const originalUsername = masterUsers[index].username;
+                const updatedUser = await apiFetch(`/users/${originalUsername}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ name, role, status, password })
+                });
 
-        closeModal('modal-user-edit');
-        renderUsers();
+                if (updatedUser) {
+                    masterUsers[index] = updatedUser;
+                    showToast('Xogta user-ka waa la cusboonaysiiyay!', 'success');
+                }
+            } else {
+                // Add new
+                if (!password) {
+                    showToast('Fadlan gali password-ka user-ka cusub!', 'error');
+                    return;
+                }
+                const newUser = await apiFetch('/users', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password, name, role, status })
+                });
+
+                if (newUser) {
+                    masterUsers.push(newUser);
+                    showToast('User cusub ayaa lagu daray!', 'success');
+                }
+            }
+            closeModal('modal-user-edit');
+            renderUsers();
+        } catch (err) {
+            console.error('User save error:', err);
+            showToast('Cillad ayaa dhacday markii la keydinayay user-ka.', 'error');
+        }
     });
 
     // --- Export & Preview Logic ---
@@ -1012,10 +1115,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const previewCard = document.getElementById('preview-card');
         const previewContainer = document.getElementById('report-preview-container');
 
-        previewCard.style.display = 'block';
-
         if (data.length === 0) {
             previewContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">Xog lama helin muddadaas aad dooratay.</p>';
+            previewCard.style.display = 'block';
             return;
         }
 
@@ -1032,6 +1134,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tableHtml += `</tbody></table>`;
         previewContainer.innerHTML = tableHtml;
 
+        // Show card after content is ready
+        previewCard.style.display = 'block';
         previewCard.scrollIntoView({ behavior: 'smooth' });
     };
 
