@@ -15,12 +15,25 @@ document.addEventListener('DOMContentLoaded', () => {
             'Authorization': `Bearer ${getToken()}`,
             ...options.headers,
         };
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
-        if (response.status === 401) {
-            window.logout();
+        try {
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+
+            if (response.status === 401) {
+                window.logout();
+                return null;
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error('API Error:', response.status, errorData);
+                return null;
+            }
+
+            return await response.json();
+        } catch (err) {
+            console.error('Fetch Error:', err);
             return null;
         }
-        return response.json();
     }
 
     // Initialize state
@@ -873,8 +886,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><span class="${user.status === 'Active' ? 'status-in' : 'status-out'}">${user.status}</span></td>
                 <td>
                     ${(currentUser.role.toLowerCase() === 'wasiir') ?
-                '<button class="btn-icon" onclick="openUserEditModal(' + index + ')" title="Edit" style="margin-right: 8px;"><i class="fa-solid fa-pen"></i></button>' +
-                '<button class="btn-icon" onclick="deleteUser(' + index + ')" title="Delete" style="color: #ef4444;"><i class="fa-solid fa-trash"></i></button>'
+                `<button class="btn-icon" onclick="openUserEditModal(${index})" title="Edit" style="margin-right: 8px;"><i class="fa-solid fa-pen"></i></button>` +
+                `<button class="btn-icon" onclick="deleteUser(${index})" title="Delete" style="color: #ef4444;"><i class="fa-solid fa-trash"></i></button>`
                 : '<i class="fa-solid fa-lock" title="No Permission"></i>'}
                 </td>
             </tr>
@@ -990,6 +1003,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (updatedUser) {
                     masterUsers[index] = updatedUser;
                     showToast('Xogta user-ka waa la cusboonaysiiyay!', 'success');
+                } else {
+                    showToast('Cillad ayaa dhacday markii la cusboonaysiinayay user-ka.', 'error');
                 }
             } else {
                 // Add new
@@ -1005,13 +1020,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (newUser) {
                     masterUsers.push(newUser);
                     showToast('User cusub ayaa lagu daray!', 'success');
+                } else {
+                    showToast('Cillad ayaa dhacday markii xogta la keydinayay.', 'error');
                 }
             }
             closeModal('modal-user-edit');
             renderUsers();
         } catch (err) {
             console.error('User save error:', err);
-            showToast('Cillad ayaa dhacday markii la keydinayay user-ka.', 'error');
         }
     });
 
