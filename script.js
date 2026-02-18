@@ -1019,13 +1019,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (newUser) {
                     masterUsers.push(newUser);
-                    showToast('User cusub ayaa lagu daray!', 'success');
+                    showToast('User cusub ayaa lagu daray! (v2.1)', 'success');
                 } else {
-                    showToast('Cillad ayaa dhacday markii xogta la keydinayay.', 'error');
+                    showToast('Cillad ayaa dhacday markii xogta la keydinayay. (Err: API)', 'error');
                 }
             }
             closeModal('modal-user-edit');
-            renderUsers();
+            try {
+                renderUsers();
+            } catch (err) {
+                console.error('Render error:', err);
+                showToast('Dhib ayaa dhacay markii la cusboonaysiinayay liiska. (v2.1)', 'error');
+            }
         } catch (err) {
             console.error('User save error:', err);
         }
