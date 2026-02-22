@@ -26,12 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 console.error('API Error:', response.status, errorData);
+                const msg = errorData.detail || errorData.message || `Error ${response.status}`;
+                if (window.showToast) window.showToast(`Cillad API: ${msg}`, 'error');
                 return null;
             }
 
             return await response.json();
         } catch (err) {
             console.error('Fetch Error:', err);
+            if (window.showToast) window.showToast(`Xiriirkii ayaa go'ay: ${err.message}`, 'error');
             return null;
         }
     }
@@ -121,13 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Show User Management actions for Wasiir as requested
         const addBtn = document.getElementById('btn-add-user');
-        const deleteAccBtn = document.getElementById('btn-delete-account');
         if (currentUser.role.toLowerCase() === 'wasiir') {
             if (addBtn) addBtn.classList.remove('hidden');
-            if (deleteAccBtn) deleteAccBtn.classList.remove('hidden');
         } else {
             if (addBtn) addBtn.classList.add('hidden');
-            if (deleteAccBtn) deleteAccBtn.classList.add('hidden');
         }
 
         userNameDisplay.textContent = currentUser.name;
@@ -905,7 +905,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (confirm(`Ma hubtaa inaad rabto inaad tirtirto user-ka: ${user.name}?`)) {
             try {
-                const response = await apiFetch(`/users/${user.username}`, {
+                const response = await apiFetch(`/users/${user.id}`, {
                     method: 'DELETE'
                 });
 
@@ -994,10 +994,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (indexInput !== '') {
                 // Update existing
                 const index = parseInt(indexInput);
-                const originalUsername = masterUsers[index].username;
-                const updatedUser = await apiFetch(`/users/${originalUsername}`, {
+                const userId = masterUsers[index].id;
+                const updatedUser = await apiFetch(`/users/${userId}`, {
                     method: 'PATCH',
-                    body: JSON.stringify({ name, role, status, password })
+                    body: JSON.stringify({ name, role, status, password, username })
                 });
 
                 if (updatedUser) {
@@ -1111,7 +1111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }).filter(item => item[2] !== 0);
 
         } else if (type === 'movement') {
-            title = "Movement Log Report";
+            title = "Warbixinta Dhaqdhaqaaqa Hantida";
             headers = ["Date", "Activity", "Recipient/Source", "User", "Status"];
             data = activities.filter(act => {
                 const actDate = parseDateString(act.date);
@@ -1186,16 +1186,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
+        doc.setFont(undefined, 'bold');
         doc.setFontSize(18);
         doc.text(title, 14, 22);
 
+        doc.setFont(undefined, 'normal');
         doc.setFontSize(11);
         doc.setTextColor(100);
         if (dateRangeTitle) {
             doc.text(dateRangeTitle, 14, 30);
-            doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 37);
+            doc.text(`La soo saaray: ${new Date().toLocaleString()}`, 14, 37);
         } else {
-            doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
+            doc.text(`La soo saaray: ${new Date().toLocaleString()}`, 14, 30);
         }
 
         doc.autoTable({
