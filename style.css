@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --sidebar-bg: #2d3e50;
     --sidebar-text: #ffffff;
     --sidebar-active: #336cf2;
@@ -909,3 +909,149 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* UDUG TECH About Us Styles */
+.udug-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px;
+    color: #333;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.udug-hero {
+    background: linear-gradient(135deg, #1e3a8a, #0f172a);
+    color: white;
+    padding: 50px 40px;
+    border-radius: 20px;
+    margin-bottom: 40px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(30, 58, 138, 0.2);
+}
+
+.udug-hero h2 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.udug-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    margin-bottom: 25px;
+    font-style: italic;
+}
+
+.udug-mission {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.udug-section-title {
+    margin: 40px 0 25px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.udug-section-title h3 {
+    font-size: 1.5rem;
+    color: #1e3a8a;
+    font-weight: 700;
+}
+
+.udug-module-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-bottom: 50px;
+}
+
+.udug-module-card {
+    background: white;
+    padding: 35px 25px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid #f1f5f9;
+}
+
+.udug-module-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 15px 35px rgba(30, 58, 138, 0.12);
+    border-color: #3b82f6;
+}
+
+.module-icon {
+    font-size: 2.8rem;
+    color: #3b82f6;
+    margin-bottom: 20px;
+}
+
+.udug-module-card h4 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.udug-module-card p {
+    font-size: 0.95rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.udug-contact-footer {
+    background: #0f172a;
+    color: #cbd5e1;
+    padding: 50px 40px;
+    border-radius: 25px;
+    margin-top: 50px;
+}
+
+.udug-contact-grid {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.contact-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: 500;
+    font-size: 1.05rem;
+}
+
+.contact-box i {
+    font-size: 1.3rem;
+    color: #3b82f6;
+}
+
+.udug-version-info {
+    text-align: center;
+    border-top: 1px solid #334155;
+    padding-top: 25px;
+    font-size: 0.95rem;
+    color: #94a3b8;
+}
+
+.udug-version-info strong {
+    color: #3b82f6;
+}
+
+@media (max-width: 768px) {
+    .udug-hero h2 { font-size: 2rem; }
+    .udug-contact-grid { flex-direction: column; align-items: flex-start; padding-left: 20px; }
+    .udug-module-grid { grid-template-columns: 1fr; }
+}
+

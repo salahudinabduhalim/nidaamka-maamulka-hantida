@@ -4,6 +4,10 @@ import os
 # Database URL format: "postgresql://user:password@host:port/database"
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+# Render sometimes uses "postgres://" which SQLModel/SQLAlchemy doesn't like
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 if not DATABASE_URL:
     # Fallback to SQLite for local development
     current_dir = os.path.dirname(os.path.abspath(__file__))
