@@ -29,19 +29,18 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
-    # Create initial user if not exists
     with Session(engine) as session:
-        initial_users = [
-            User(username="maxamed", password_hash=get_password_hash("maxamed123"), name="Mudane Wasiir Maxamed Sh. Aden", role="wasiir"),
-            User(username="abdinur", password_hash=get_password_hash("abdinur123"), name="Abdinur Abdulahi Ali", role="agaasime"),
-            User(username="salah", password_hash=get_password_hash("salah123"), name="Salah Abdi Ismail", role="storekeeper"),
-            User(username="admin", password_hash=get_password_hash("admin123"), name="System Administrator", role="wasiir"),
-        ]
-        for u in initial_users:
-            statement = select(User).where(User.username == u.username)
-            if not session.exec(statement).first():
+        # Only seed if no users exist at all
+        if not session.exec(select(User)).first():
+            initial_users = [
+                User(username="maxamed", password_hash=get_password_hash("maxamed123"), name="Mudane Wasiir Maxamed Sh. Aden", role="wasiir"),
+                User(username="abdinur", password_hash=get_password_hash("abdinur123"), name="Abdinur Abdulahi Ali", role="agaasime"),
+                User(username="salah", password_hash=get_password_hash("salah123"), name="Salah Abdi Ismail", role="storekeeper"),
+                User(username="admin", password_hash=get_password_hash("admin123"), name="System Administrator", role="wasiir"),
+            ]
+            for u in initial_users:
                 session.add(u)
-        session.commit()
+            session.commit()
 
 # --- Serve Static Files ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -135,6 +134,57 @@ def update_activity_status(activity_id: int, data: dict, session: Session = Depe
 @app.get("/api/users", response_model=List[User])
 def get_users(session: Session = Depends(get_session)):
     return session.exec(select(User)).all()
+
+@app.post("/api/users", response_model=User)
+def create_user(user_data: dict, session: Session = Depends(get_session)):
+    # Check if user already exists
+    statement = select(User).where(User.username == user_data["username"])
+    if session.exec(statement).first():
+        raise HTTPException(status_code=400, detail="Username already exists")
+    
+    new_user = User(
+        username=user_data["username"],
+        password_hash=get_password_hash(user_data.get("password", "change_me")),
+        name=user_data.get("name"),
+        role=user_data.get("role", "storekeeper"),
+        status=user_data.get("status", "Active")
+    )
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
+    return new_user
+
+@app.patch("/api/users/{user_id}", response_model=User)
+def update_user(user_id: int, data: dict, session: Session = Depends(get_session)):
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if "username" in data and data["username"]:
+        user.username = data["username"]
+    if "name" in data:
+        user.name = data["name"]
+    if "role" in data:
+        user.role = data["role"]
+    if "status" in data:
+        user.status = data["status"]
+    if "password" in data and data["password"]:
+        user.password_hash = get_password_hash(data["password"])
+    
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
+
+@app.delete("/api/users/{user_id}")
+def delete_user(user_id: int, session: Session = Depends(get_session)):
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    session.delete(user)
+    session.commit()
+    return {"status": "success", "message": "User deleted successfully"}
 
 @app.post("/api/migrate-users")
 def migrate_users(users: List[dict], session: Session = Depends(get_session)):
