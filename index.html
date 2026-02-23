@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Management System | Nidaamka Maamulka Agabka</title>
+    <meta name="description"
+        content="Nidaamka Maamulka Agabka iyo Hantida Xafiiska Waxbarashada Deegaanka Soomaalida. Maamul bakhaarkaaga si hufan oo dijital ah.">
+    <meta name="keywords"
+        content="warehouse management, Somalia, Education Office, maamulka bakhaarka, hantida xafiiska, Somali Education, inventory system">
+    <meta name="author" content="Xafiiska Waxbarashada Deegaanka Soomaalida">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://warehouse-app.onrender.com/">
+    <meta property="og:title" content="Warehouse Management System - Xafiiska Waxbarashada">
+    <meta property="og:description" content="Nidaamka casriga ah ee maamulka agabka iyo hantida xafiiska.">
+    <meta property="og:image" content="logo.jpg">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <img src="logo.jpg" alt="Logo" class="logo">
+                </div>
+                <h3>XAFIISKA WAXBARASHADA DEEGAANKA SOOMAALIDA</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="#" data-target="dashboard"><i class="fa-solid fa-house"></i>
+                            Dashboard-ka Guud</a></li>
+                    <li><a href="#" data-target="inventory"><i class="fa-solid fa-warehouse"></i> Maamulka Bakhaarka</a>
+                    </li>
+                    <li><a href="#" data-target="inbound"><i class="fa-solid fa-boxes-stacked"></i> Qabashada Agabka</a>
+                    </li>
+                    <li><a href="#" data-target="outbound"><i class="fa-solid fa-truck-ramp-box"></i> Bixinta Agabka</a>
+                    </li>
+                    <li><a href="#" data-target="reports"><i class="fa-solid fa-file-pdf"></i> Warbixinnada PDF &
+                            Excel</a></li>
+                    <li><a href="#" data-target="users"><i class="fa-solid fa-users-gear"></i> Maamulka Users-ka</a>
+                    </li>
+                    <li><a href="#" data-target="settings"><i class="fa-solid fa-circle-info"></i> About Us</a></li>
+                    <li class="verification-link hidden"><a href="#" data-target="verification"><i
+                                class="fa-solid fa-clipboard-check"></i> Verification <span id="verification-badge"
+                                class="badge">0</span></a></li>
+                    <li><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="sidebar-overlay"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menu-toggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="system-name">Nidaamka Maamulka hantida xafiiska</div>
+
+                </div>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <span id="display-user-name" class="user-name">Salah Abdi Ismail</span>
+                        <span id="display-user-role" class="user-role">Storekeeper</span>
+                    </div>
+                    <div id="display-user-avatar" class="user-avatar">
+                        <img src="logo.jpg" alt="User Avatar" class="logo">
+                    </div>
+                </div>
+            </header>
+
+            <section class="dashboard-section">
+                <!-- Dashboard View -->
+                <div id="view-dashboard" class="app-view active">
+                    <div class="section-header">
+                        <h1 class="page-title">Dashboard-ka Masuulka Xafiiska</h1>
+                        <div class="action-buttons storekeeper-only">
+                            <button class="btn btn-primary" onclick="openModal('modal-in')"><i
+                                    class="fa-solid fa-plus"></i> Qabo Agab</button>
+                            <button class="btn btn-secondary" onclick="openModal('modal-out')"><i
+                                    class="fa-solid fa-minus"></i> Bixi Agab</button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card blue-border">
+                            <span class="stat-label">AGABKA KAYDSAN</span>
+                            <div class="stat-value" id="stat-total">10,250</div>
+                        </div>
+                        <div class="stat-card green-border">
+                            <span class="stat-label">LA GELIYAY (MAANTA)</span>
+                            <div class="stat-value" id="stat-in-today">0</div>
+                        </div>
+                        <div class="stat-card orange-border">
+                            <span class="stat-label">LA BIXIYAY (MAANTA)</span>
+                            <div class="stat-value" id="stat-out-today">0</div>
+                        </div>
+                        <div class="stat-card red-border">
+                            <span class="stat-label">DIGNIIN GABAABSI</span>
+                            <div class="stat-value">2</div>
+                        </div>
+                    </div>
+
+                    <div class="content-grid">
+                        <!-- Alerts & Notifications -->
+                        <div class="alerts-container card">
+                            <h3>Xaqiijinta Sugaysa (Pending Approval)</h3>
+                            <div id="dashboard-verification-list">
+                                <!-- Dynamic Content -->
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="recent-activity card">
+                            <h3>Dhaqdhaqaaqa Ugu Dambeeyay (Recent Activity)</h3>
+                            <table class="activity-table">
+                                <thead>
+                                    <tr>
+                                        <th>TAARIIKH</th>
+                                        <th>WAXGABAD</th>
+                                        <th>QOFKA (RECIPIENT)</th>
+                                        <th>DIWAANGALIYIHA</th>
+                                        <th>STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activity-list">
+                                    <!-- Dynamic Content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory View -->
+                <div id="view-inventory" class="app-view">
+                    <div class="section-header">
+                        <h1 class="page-title">Maamulka Bakhaarka (Inventory)</h1>
+                    </div>
+                    <div class="card">
+                        <table class="activity-table">
+                            <thead>
+                                <tr>
+                                    <th>MAGACA AGABKA</th>
+                                    <th>QAYBTA/CATEGORY</th>
+                                    <th>KAYDKA (QTY)</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-list">
+                                <!-- Dynamic Content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Verification View -->
+                <div id="view-verification" class="app-view">
+                    <div class="section-header">
+                        <h1 class="page-title">Verification & Approval</h1>
+                    </div>
+                    <div class="card">
+                        <table class="activity-table">
+                            <thead>
+                                <tr>
+                                    <th>DATE</th>
+                                    <th>ACTION</th>
+                                    <th>RECIPIENT/SOURCE</th>
+                                    <th>STOREKEEPER</th>
+                                    <th>COMMENT</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="verification-list">
+                                <!-- Dynamic Content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Inbound View -->
+                <div id="view-inbound" class="app-view">
+                    <div class="section-header">
+                        <h1 class="page-title">Qabashada Agabka (Inbound)</h1>
+                        <button class="btn btn-primary storekeeper-only" onclick="openModal('modal-in')">Diiwaangali Soo
+                            galid</button>
+                    </div>
+                    <div class="card">
+                        <table class="activity-table" id="inbound-list">
+                            <!-- Filtered for Inbound -->
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Outbound View -->
+                <div id="view-outbound" class="app-view">
+                    <div class="section-header">
+                        <h1 class="page-title">Bixinta Agabka (Outbound)</h1>
+                        <button class="btn btn-secondary storekeeper-only" onclick="openModal('modal-out')">Diiwaangali
+                            Bixid</button>
+                    </div>
+                    <div class="card">
+                        <table class="activity-table" id="outbound-list">
+                            <!-- Filtered for Outbound -->
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reports View -->
+                <div id="view-reports" class="app-view">
+                    <h1 class="page-title">Warbixinnada</h1>
+                    <div class="reports-content-grid">
+                        <div class="card reports-form-card" style="padding: 15px;">
+                            <h3 style="margin-bottom: 12px; font-size: 1rem;">Xogta Warbixinta</h3>
+                            <input type="hidden" id="report-type" value="movement">
+
+                            <div class="form-group" style="margin-bottom: 8px;">
+                                <label style="font-size: 0.75rem;">Nooca Faylka (Export Format)</label>
+                                <select id="report-format" class="form-control"
+                                    style="padding: 4px; font-size: 0.85rem;">
+                                    <option value="pdf">PDF Document</option>
+                                    <option value="excel">Excel Spreadsheet</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 8px;">
+                                <label style="font-size: 0.75rem;">Qofka (Storekeeper)</label>
+                                <select id="report-user-filter" class="form-control"
+                                    style="padding: 4px; font-size: 0.85rem;">
+                                    <option value="ALL">Dhamaan Storekeepers-ka</option>
+                                    <!-- Dynamic Content -->
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                    <label style="font-size: 0.75rem;">Laga bilaabo</label>
+                                    <input type="date" id="report-start-date" class="form-control"
+                                        style="padding: 4px; font-size: 0.8rem; width: 100%;">
+                                </div>
+                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                    <label style="font-size: 0.75rem;">Ku eg</label>
+                                    <input type="date" id="report-end-date" class="form-control"
+                                        style="padding: 4px; font-size: 0.8rem; width: 100%;">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                <button class="btn btn-secondary" style="flex: 1; padding: 8px; font-size: 0.8rem;"
+                                    onclick="handlePreview()">
+                                    <i class="fa-solid fa-eye"></i> Eeg
+                                </button>
+                                <button class="btn btn-primary" style="flex: 1; padding: 8px; font-size: 0.8rem;"
+                                    onclick="handleExport()">
+                                    <i class="fa-solid fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Preview Container -->
+                        <div class="card" id="preview-card" style="display: none; min-height: 400px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="margin: 0;">Report Preview</h3>
+                                <button class="btn btn-icon"
+                                    onclick="document.getElementById('preview-card').style.display='none'">&times;</button>
+                            </div>
+                            <div id="report-preview-container">
+                                <!-- Dynamic Preview Table -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users View -->
+                <div id="view-users" class="app-view">
+                    <div class="section-header">
+                        <h1 class="page-title" style="margin:0;">Maamulka Users-ka</h1>
+                        <div class="header-actions">
+                            <button id="btn-add-user" class="btn btn-primary hidden"
+                                onclick="openModal('modal-user-edit'); resetUserForm();">
+                                <i class="fa-solid fa-user-plus"></i> Add User
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <table class="activity-table">
+                            <thead>
+                                <tr>
+                                    <th>MAGACA</th>
+                                    <th>XILKA (ROLE)</th>
+                                    <th>STATUS</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-list">
+                                <!-- Dynamic Content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- About Us View -->
+                <div id="view-settings" class="app-view">
+                    <div class="section-header">
+                        <h1 class="page-title">About Us</h1>
+                    </div>
+
+                    <div class="udug-container">
+                        <!-- Hero Section -->
+                        <div class="udug-hero">
+                            <div class="udug-hero-content">
+                                <h2>UDUG Technologies & Software Solutions</h2>
+                                <p class="udug-subtitle">Turning Ideas into Digital Solutions</p>
+                                <p class="udug-mission">
+                                    Waxaan dhisnay nidaamkan <strong>Warehouse Management System (WMS)</strong> si loogu
+                                    maamulo agabka waxbarashada ee deegaanka si hufnaan leh, oo dijital ah.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- System Modules -->
+                        <div class="udug-section-title">
+                            <h3>Modules-ka Nidaamka (System Modules)</h3>
+                        </div>
+
+                        <div class="udug-module-grid">
+                            <div class="udug-module-card">
+                                <div class="module-icon"><i class="fa-solid fa-warehouse"></i></div>
+                                <h4>Maamulka Bakhaarka</h4>
+                                <p>Inventory Management</p>
+                            </div>
+                            <div class="udug-module-card">
+                                <div class="module-icon"><i class="fa-solid fa-boxes-packing"></i></div>
+                                <h4>Qabashada Qalabka</h4>
+                                <p>Goods Received Note (GRN)</p>
+                            </div>
+                            <div class="udug-module-card">
+                                <div class="module-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                                <h4>Bixinta Qalabka</h4>
+                                <p>Item Issuance</p>
+                            </div>
+                            <div class="udug-module-card">
+                                <div class="module-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                                <h4>Warbixin PDF</h4>
+                                <p>Automated PDF Reporting</p>
+                            </div>
+                            <div class="udug-module-card">
+                                <div class="module-icon"><i class="fa-solid fa-users-gear"></i></div>
+                                <h4>Maamulka Users-ka</h4>
+                                <p>User Management & Roles</p>
+                            </div>
+                            <div class="udug-module-card">
+                                <div class="module-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                                <h4>Amniga & Logout</h4>
+                                <p>Secure Access Control</p>
+                            </div>
+                        </div>
+
+                        <!-- Footer Info -->
+                        <div class="udug-contact-footer">
+                            <div class="udug-contact-grid">
+                                <div class="contact-box">
+                                    <i class="fa-solid fa-globe"></i>
+                                    <span>www.udugtech.com</span>
+                                </div>
+                                <div class="contact-box">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <span>support@udugtech.com</span>
+                                </div>
+                                <div class="contact-box">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <span>+251 919 072 005</span>
+                                </div>
+                            </div>
+                            <div class="udug-version-info">
+                                <p>Version 1.0.0 | Developed by <strong>UDUG TECH &copy; 2024</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Inbound Modal with Integrated New Item Registration -->
+    <div id="modal-in" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('modal-in')">&times;</span>
+            <h2>Qabashada Agab</h2>
+
+            <form id="form-in">
+                <div class="form-group">
+                    <label>Qaybta (Category)</label>
+                    <select id="in-existing-category" class="form-control" required>
+                        <option value="" disabled selected>Dooro Qaybta</option>
+                    </select>
+                </div>
+
+                <div id="in-new-cat-container" class="form-group" style="display: none;">
+                    <label>Magaca Qaybta Cusub</label>
+                    <input type="text" id="in-new-cat-input" class="form-control"
+                        placeholder="Tusaale: Furniture, Electronics...">
+                </div>
+
+                <div class="form-group" id="in-item-select-container">
+                    <label>Dooro Agabka</label>
+                    <select id="in-item-select" class="form-control" required>
+                        <option value="" disabled selected>Dooro Agabka</option>
+                    </select>
+                </div>
+
+                <div id="in-new-item-container" class="form-group" style="display: none;">
+                    <label>Magaca Agabka Cusub</label>
+                    <input type="text" id="in-new-item-input" class="form-control" placeholder="Tusaale: Kursi">
+                </div>
+
+                <div id="dynamic-book-fields-in" style="display: none;">
+                    <div class="form-group">
+                        <label>Dooro Maaddada</label>
+                        <select id="in-book-subject" class="form-control">
+                            <option value="" disabled selected>Dooro Maaddada</option>
+                            <option value="English">English</option>
+                            <option value="Maths">Maths</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Biology">Biology</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Somali">Somali</option>
+                            <option value="Arabic">Arabic</option>
+                            <option value="NEW_SUBJECT">+ New Maaddo...</option>
+                        </select>
+                    </div>
+                    <div id="in-new-subject-container" class="form-group" style="display: none;">
+                        <label>Magaca Maaddada Cusub</label>
+                        <input type="text" id="in-new-subject-input" class="form-control"
+                            placeholder="Tusaale: History">
+                    </div>
+                    <div class="form-group">
+                        <label>Dooro Fasalka</label>
+                        <select id="in-book-grade" class="form-control">
+                            <option value="" disabled selected>Dooro Fasalka</option>
+                            <option value="KG">KG</option>
+                            <option value="Grade 1">Grade 1</option>
+                            <option value="Grade 2">Grade 2</option>
+                            <option value="Grade 3">Grade 3</option>
+                            <option value="Grade 4">Grade 4</option>
+                            <option value="Grade 5">Grade 5</option>
+                            <option value="Grade 6">Grade 6</option>
+                            <option value="Grade 7">Grade 7</option>
+                            <option value="Grade 8">Grade 8</option>
+                            <option value="Grade 9">Grade 9</option>
+                            <option value="Grade 10">Grade 10</option>
+                            <option value="Grade 11">Grade 11</option>
+                            <option value="Grade 12">Grade 12</option>
+                            <option value="NEW_GRADE">+ New Grade...</option>
+                        </select>
+                    </div>
+                    <div id="in-new-grade-container" class="form-group" style="display: none;">
+                        <label>Magaca Fasalka Cusub</label>
+                        <input type="text" id="in-new-grade-input" class="form-control" placeholder="Tusaale: Nursery">
+                    </div>
+                </div>
+
+                <!-- Dynamic fields for laptops -->
+                <div id="dynamic-laptop-fields-in" style="display: none;">
+                    <div class="form-group">
+                        <label>Nooca Laptop-ka (Brand)</label>
+                        <select id="in-laptop-brand" class="form-control">
+                            <option value="" disabled selected>Dooro Nooca</option>
+                            <option value="HP">HP</option>
+                            <option value="Dell">Dell</option>
+                            <option value="Lenovo">Lenovo</option>
+                            <option value="MacBook">MacBook</option>
+                            <option value="Asus">Asus</option>
+                            <option value="Acer">Acer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tirada (QTY)</label>
+                    <input type="number" id="in-qty" required placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>Halka uu ka yimid (Source)</label>
+                    <input type="text" id="in-source" required placeholder="Tusaale: Bakhaarka A">
+                </div>
+                <div class="form-group">
+                    <label>Faallo (Comment)</label>
+                    <textarea id="in-comment" class="form-control" rows="2"
+                        placeholder="Tusaale: Agabkani waa mid cusub..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary full-width">Diwaangali</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-out" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('modal-out')">&times;</span>
+            <h2>Bixinta Agabka</h2>
+            <form id="form-out">
+                <div class="form-group">
+                    <label>Qaybta (Category)</label>
+                    <select id="out-category-select" class="form-control" required>
+                        <option value="" disabled selected>Dooro Qaybta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Magaca Agabka</label>
+                    <select id="out-item-select" class="form-control" required>
+                        <option value="" disabled selected>Dooro Agabka</option>
+                    </select>
+                    <small id="out-stock-display"
+                        style="display: block; margin-top: 5px; color: var(--blue); font-weight: 600;"></small>
+                </div>
+                <div class="form-group">
+                    <label>Tirada</label>
+                    <input type="number" id="out-qty" required placeholder="0" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Qofka loo bixiyay / Recipient</label>
+                    <input type="text" id="out-target" required placeholder="Tusaale: Cumar">
+                </div>
+                <button type="submit" class="btn btn-secondary full-width">Bixi Agabka</button>
+            </form>
+        </div>
+    </div>
+    <div id="modal-user-edit" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('modal-user-edit')">&times;</span>
+            <h2>Bedel Xogta User-ka</h2>
+            <form id="form-user-edit">
+                <input type="hidden" id="edit-user-index">
+                <div class="form-group">
+                    <label>Magaca Buuxa</label>
+                    <input type="text" id="edit-user-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Username (Login)</label>
+                    <input type="text" id="edit-user-username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Password-ka Cusub</label>
+                    <input type="password" id="edit-user-password" class="form-control"
+                        placeholder="U daa banaan haddaanad bedeleyn">
+                </div>
+                <div class="form-group">
+                    <label>Xilka (Role)</label>
+                    <select id="edit-user-role" class="form-control">
+                        <option value="storekeeper">Storekeeper</option>
+                        <option value="wasiir">Wasiir</option>
+                        <option value="agaasime">Agaasime</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="edit-user-status" class="form-control">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-actions-row">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Update User</button>
+                    <button type="button" id="btn-delete-user" class="btn btn-danger hidden" style="flex: 1;"
+                        onclick="handleDeleteSelectedUser()">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
