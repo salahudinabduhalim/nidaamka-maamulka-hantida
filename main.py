@@ -43,13 +43,8 @@ def on_startup():
                 session.add(u)
             session.commit()
 
-        # 2. FINAL RESET TO ZERO (Wipe all data)
-        # This will clear everything including Low Stock Alerts
-        print("FORCED WIPE: Resetting system to zero...")
-        session.execute(text("DELETE FROM activity"))
-        session.execute(text("DELETE FROM item"))
-        session.commit()
-        print("SYSTEM COUNTS RESET TO ZERO.")
+        # 2. Data persistence is now preserved.
+
 
 # --- Serve Static Files ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
