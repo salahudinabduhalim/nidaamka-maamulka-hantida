@@ -10,9 +10,11 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://") and not DATABASE_URL.
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL environment variable is NOT set. PostgreSQL is mandatory.")
+    print("WARNING: DATABASE_URL environment variable is NOT set. Falling back to local SQLite.")
+    DATABASE_URL = "sqlite:///local_test.db"
 
 engine = create_engine(DATABASE_URL)
+
 
 
 def create_db_and_tables():

@@ -134,6 +134,16 @@ def update_activity_status(activity_id: int, data: dict, session: Session = Depe
     session.refresh(activity)
     return activity
 
+@app.delete("/api/activities/{activity_id}")
+def delete_activity(activity_id: int, session: Session = Depends(get_session)):
+    activity = session.get(Activity, activity_id)
+    if not activity:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    
+    session.delete(activity)
+    session.commit()
+    return {"status": "success", "message": "Activity deleted successfully"}
+
 # --- User Endpoints ---
 @app.get("/api/users", response_model=List[User])
 def get_users(session: Session = Depends(get_session)):

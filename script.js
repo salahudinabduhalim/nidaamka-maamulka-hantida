@@ -446,16 +446,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const canVerify = currentUser.role === 'agaasime';
 
-        dashboardList.innerHTML = pendingItems.map(req => `
+        dashboardList.innerHTML = pendingItems.map(req => {
+            const isCreator = req.user === currentUser.name;
+            const canDelete = isCreator || canVerify;
+            const deleteBtn = canDelete ? `<button class="btn btn-sm" style="background:var(--red); color:white; padding: 2px 8px; font-size: 0.75rem; border:none; border-radius: 4px; cursor: pointer; float: right;" onclick="event.stopPropagation(); deleteActivity(${req.id})"><i class="fa-solid fa-trash"></i> Tirtir</button>` : '';
+            return `
             <div class="alert-item ${req.action.includes('Bixiyay') ? 'hazard' : 'info'} ${canVerify ? 'clickable' : ''}" 
                  ${canVerify ? `onclick="window.switchView('verification')"` : ''}>
                 <i class="fa-solid ${req.action.includes('Bixiyay') ? 'fa-circle-exclamation' : 'fa-circle-info'}"></i>
                 <div style="flex:1;">
-                    <div style="font-weight:600; font-size: 0.9rem;">${req.action}</div>
+                    <div style="font-weight:600; font-size: 0.9rem;">${req.action} ${deleteBtn}</div>
                     <div style="font-size: 0.75rem; color: #64748b;">Loo diray: ${req.recipient} | Diray: ${req.user}</div>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
     }
 
     function updateVerificationBadge() {
@@ -490,14 +494,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><strong>${req.user}</strong></td>
                 <td>${req.comment || '-'}</td>
                 <td>
-                    <div class="action-buttons-cell">
+                    <div class="action-buttons-cell" style="display:flex; gap:5px; align-items:center;">
                         <button class="btn-approve" onclick="approveRequest(${req.id})">Approve</button>
                         <button class="btn-reject" onclick="rejectRequest(${req.id})">Reject</button>
+                        <button class="btn btn-sm" style="background:var(--red); color:white; padding: 5px 10px; border:none; border-radius: 4px; cursor: pointer;" onclick="deleteActivity(${req.id})"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </td>
             </tr>
         `).join('');
     }
+
+    window.deleteActivity = async (id) => {
+        if (confirm('Ma xaqiijinaysaa in aad tirtirto xogtan (Are you sure you want to delete this)?')) {
+            try {
+                const response = await apiFetch(`/activities/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response && response.status === 'success') {
+                    activities = activities.filter(a => a.id !== id);
+                    renderData();
+                    updateVerificationBadge();
+                    if (window.showToast) window.showToast('Xogtii dib waa loo tirtiray (Deleted successfully)!', 'success');
+                }
+            } catch (err) {
+                console.error('Delete error:', err);
+                if (window.showToast) window.showToast('Dhibaatid dhacday (Error processing delete)', 'error');
+            }
+        }
+    };
 
     window.approveRequest = async (id) => {
         try {
