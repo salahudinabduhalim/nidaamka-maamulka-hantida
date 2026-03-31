@@ -64,17 +64,19 @@ def seed_autism_data():
                 session.commit()
                 session.refresh(item)
             
-            # Add Inbound Activity
-            activity = Activity(
-                date=today,
-                action=f"Geliyay: {item_data['qty']} {item_data['name']}",
-                item_category=item_data["category"],
-                recipient="Xafiiska Waxbarashada",
-                user="System Admin",
-                comment="Autism School Equipment Data Entry",
-                status="Pending"
-            )
-            session.add(activity)
+            # Add Inbound Activity only if it wasn't added before
+            existing_act = session.exec(select(Activity).where(Activity.comment == "Autism School Equipment Data Entry").where(Activity.action == f"Geliyay: {item_data['qty']} {item_data['name']}")).first()
+            if not existing_act:
+                activity = Activity(
+                    date=today,
+                    action=f"Geliyay: {item_data['qty']} {item_data['name']}",
+                    item_category=item_data["category"],
+                    recipient="Xafiiska Waxbarashada",
+                    user="System Admin",
+                    comment="Autism School Equipment Data Entry",
+                    status="Pending"
+                )
+                session.add(activity)
             
         session.commit()
     print(f"Successfully added {len(items_to_add)} Autism equipment items.")

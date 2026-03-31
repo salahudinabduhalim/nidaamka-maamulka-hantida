@@ -108,6 +108,15 @@ def create_item(item: Item, session: Session = Depends(get_session)):
     session.refresh(item)
     return item
 
+@app.get("/api/seed-autism")
+def seed_autism():
+    try:
+        from seed_autism_data import seed_autism_data
+        seed_autism_data()
+        return {"status": "success", "message": "Autism equipment data seeded successfully"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 # --- Activity Endpoints ---
 @app.get("/api/activities", response_model=List[Activity])
 def get_activities(session: Session = Depends(get_session)):
