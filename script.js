@@ -450,13 +450,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const isCreator = req.user === currentUser.name;
             const canDelete = isCreator || canVerify;
             const deleteBtn = canDelete ? `<button class="btn btn-sm" style="background:var(--red); color:white; padding: 2px 8px; font-size: 0.75rem; border:none; border-radius: 4px; cursor: pointer; float: right;" onclick="event.stopPropagation(); deleteActivity(${req.id})"><i class="fa-solid fa-trash"></i> Tirtir</button>` : '';
+            const isOut = req.action.includes('Bixiyay');
+            const directionLabel = isOut ? 'Loo diray:' : 'Ka yimid (Keenay):';
+            const userLabel = isOut ? 'Bixiyay:' : 'Gudoomey (Diwaangeliyay):';
+
             return `
-            <div class="alert-item ${req.action.includes('Bixiyay') ? 'hazard' : 'info'} ${canVerify ? 'clickable' : ''}" 
+            <div class="alert-item ${isOut ? 'hazard' : 'info'} ${canVerify ? 'clickable' : ''}" 
                  ${canVerify ? `onclick="window.switchView('verification')"` : ''}>
-                <i class="fa-solid ${req.action.includes('Bixiyay') ? 'fa-circle-exclamation' : 'fa-circle-info'}"></i>
+                <i class="fa-solid ${isOut ? 'fa-circle-exclamation' : 'fa-circle-info'}"></i>
                 <div style="flex:1;">
                     <div style="font-weight:600; font-size: 0.9rem;">${req.action} ${deleteBtn}</div>
-                    <div style="font-size: 0.75rem; color: #64748b;">Loo diray: ${req.recipient} | Diray: ${req.user}</div>
+                    <div style="font-size: 0.75rem; color: #64748b;">${directionLabel} ${req.recipient} | ${userLabel} ${req.user}</div>
                 </div>
             </div>
         `}).join('');
