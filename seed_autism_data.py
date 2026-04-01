@@ -55,6 +55,22 @@ def seed_autism_data():
     today = datetime.now().strftime("%d/%m/%Y")
     with Session(engine) as session:
         print("Seeding new Autism School Equipment data...")
+        
+        # Update existing records to correct the supplier name
+        existing_acts = session.exec(select(Activity).where(Activity.comment == "Autism School Equipment Data Entry")).all()
+        for act in existing_acts:
+            changed = False
+            if act.recipient == "Xafiiska Waxbarashada":
+                act.recipient = "mohamed whole sale"
+                changed = True
+            if act.user == "System Admin":
+                act.user = "Salah Abdi Ismail"
+                changed = True
+                
+            if changed:
+                session.add(act)
+        session.commit()
+
         for item_data in items_to_add:
             # Check if item exists to avoid duplication
             existing_item = session.exec(select(Item).where(Item.name == item_data["name"])).first()
@@ -71,8 +87,8 @@ def seed_autism_data():
                     date=today,
                     action=f"Geliyay: {item_data['qty']} {item_data['name']}",
                     item_category=item_data["category"],
-                    recipient="Xafiiska Waxbarashada",
-                    user="System Admin",
+                    recipient="mohamed whole sale",
+                    user="Salah Abdi Ismail",
                     comment="Autism School Equipment Data Entry",
                     status="Pending"
                 )
