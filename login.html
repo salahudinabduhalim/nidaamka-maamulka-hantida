@@ -21,122 +21,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <style>
-        body {
-            background: #1e293b;
-            display: flex;
-            height: 100vh;
+                body {
             margin: 0;
-            overflow: hidden;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .split-screen {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Left Side - Minister Profile */
-        .left-side {
-            flex: 1.3;
-            position: relative;
-            background: url('education_bg.png');
-            background-size: cover;
-            background-position: 100% 20%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 40px;
-            color: white;
-            animation: slideInLeft 1s ease-out;
-        }
-
-        .left-side::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to right,
-                    rgba(30, 41, 59, 0) 0%,
-                    rgba(30, 41, 59, 0) 40%,
-                    rgba(30, 41, 59, 0.4) 70%,
-                    rgba(30, 41, 59, 1) 100%);
-            pointer-events: none;
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .minister-info {
-            position: relative;
-            z-index: 2;
-            background: rgba(30, 41, 59, 0.3);
-            backdrop-filter: blur(4px);
-            padding: 20px 25px;
-            border-radius: 12px;
-            border-left: 4px solid #ffd700;
-            max-width: 500px;
-            margin-bottom: 20px;
-        }
-
-        .minister-info h1 {
-            font-size: 1.6rem;
-            margin-bottom: 5px;
-            color: #ffd700;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .minister-info .title {
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            margin-bottom: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .minister-info .quote {
-            font-style: italic;
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #f1f5f9;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            padding-top: 12px;
-        }
-
-        /* Right Side - Login Form */
-        .right-side {
-            flex: 0.7;
-            background: #1e293b;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 40px;
-            z-index: 10;
+            font-family: 'Poppins', sans-serif;
+            background: url('education_bg.png') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
         }
 
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            z-index: 1;
+        }
+
+        
+
         .login-container {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08); /* More visible glass */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 3.5rem;
             border-radius: 24px;
             width: 100%;
             max-width: 450px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            animation: fadeIn 1s ease-out 0.3s both;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            animation: fadeIn 1s ease-out 0.1s both;
+            z-index: 10;
+        }
+        
+        .welcome-text {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+            font-weight: 300;
         }
 
         @keyframes fadeIn {
@@ -282,101 +209,58 @@
 
         /* Mobile Adjustments */
         @media screen and (max-width: 768px) {
-            body {
-                overflow-y: auto;
-            }
-
-            .split-screen {
-                flex-direction: column;
-                height: auto;
-            }
-
-            .left-side {
-                flex: none;
-                height: 40vh;
-                padding: 20px;
-                background-position: center 20%;
-            }
-
-            .minister-info {
-                max-width: 100%;
-                margin-bottom: 0;
-            }
-
-            .minister-info h1 {
-                font-size: 1.2rem;
-            }
-
-            .minister-info .title {
-                font-size: 0.75rem;
-            }
-
-            .minister-info .quote {
-                font-size: 0.85rem;
-                display: none;
-                /* Hide quote on small mobile to save space */
-            }
-
-            .right-side {
-                flex: none;
-                padding: 20px;
-                min-height: 60vh;
-            }
-
             .login-container {
-                padding: 2rem;
+                padding: 2.5rem 2rem;
+                margin: 20px;
                 border-radius: 16px;
-                margin-top: -40px;
-                /* Overlap with image slightly */
-                background: #1e293b;
+                background: rgba(30, 41, 59, 0.6);
+                backdrop-filter: blur(20px);
             }
 
             .login-header img {
-                width: 70px;
-                height: 70px;
+                width: 80px;
+                height: 80px;
+                margin-bottom: 1rem;
             }
 
             .login-header h2 {
-                font-size: 1.1rem;
+                font-size: 1.15rem;
+            }
+            
+            .welcome-text {
+                font-size: 0.85rem;
+                margin-bottom: 1.5rem;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="split-screen">
-        <!-- Left Section: Educational Background -->
-        <div class="left-side">
+    <div class="login-container">
+        <div class="login-header">
+            <img src="logo.jpg" alt="Logo">
+            <h2>Nidaamka Maamulka Agabka</h2>
+            <div class="welcome-text">Kusoo dhawoow Nidaamka Casriga ah ee Maamulka Hantida iyo Agabka Waxbarashada.</div>
         </div>
-
-        <!-- Right Section: Login Form -->
-        <div class="right-side">
-            <div class="login-container">
-                <div class="login-header">
-                    <img src="logo.jpg" alt="Logo">
-                    <h2>Nidaamka Maamulka Agabka Xafiiska</h2>
+        <div id="error-box" class="error-message">Username ama Password-ka waa khalad!</div>
+        <form id="login-form">
+            <div class="form-group">
+                <label>Username (Gal Magaca)</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="username" class="form-control" placeholder="Tusaale: salah" required>
                 </div>
-                <div id="error-box" class="error-message">Username ama Password-ka waa khalad!</div>
-                <form id="login-form">
-                    <div class="form-group">
-                        <label>Username (Gal Magaca)</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-user"></i>
-                            <input type="text" id="username" class="form-control" placeholder="Tusaale: salah" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Password (Gal Sirta)</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="password" class="form-control" placeholder="••••••••" required>
-                            <i class="fa-solid fa-eye eye-toggle" id="togglePassword"></i>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-login">Gal Nidaamka (Sign In)</button>
-                </form>
             </div>
-        </div>
+            <div class="form-group">
+                <label>Password (Gal Sirta)</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                    <i class="fa-solid fa-eye eye-toggle" id="togglePassword"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-login">Gal Nidaamka (Sign In)</button>
+        </form>
     </div>
 
     <script>
