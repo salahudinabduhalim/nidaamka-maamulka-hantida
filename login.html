@@ -62,12 +62,12 @@
         }
         
         .welcome-text {
-            color: #cbd5e1;
+            color: #0f172a;
             font-size: 0.95rem;
             margin-top: 0.5rem;
             margin-bottom: 2rem;
             line-height: 1.5;
-            font-weight: 300;
+            font-weight: 500;
         }
 
         @keyframes fadeIn {
@@ -98,12 +98,11 @@
         }
 
         .login-header h2 {
-            color: #fff;
-            font-size: 1.3rem;
+            color: #0f172a;
+            font-size: 1.35rem;
             margin-bottom: 0.5rem;
             line-height: 1.4;
-            font-weight: 600;
-            color: #f1f5f9;
+            font-weight: 700;
         }
 
         .form-group {
@@ -112,10 +111,10 @@
 
         .form-group label {
             display: block;
-            color: #94a3b8;
+            color: #0f172a;
             margin-bottom: 0.6rem;
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .input-wrapper {
@@ -127,7 +126,7 @@
             left: 1.25rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #64748b;
+            color: #334155;
             transition: color 0.3s;
             pointer-events: none;
         }
@@ -140,13 +139,18 @@
         .input-wrapper .form-control {
             width: 100%;
             padding: 1rem 3.5rem 1rem 3.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(0, 0, 0, 0.15);
             border-radius: 12px;
-            color: #fff;
+            color: #0f172a;
             font-family: 'Poppins', sans-serif;
             transition: all 0.3s;
             font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .input-wrapper .form-control::placeholder {
+            color: #475569;
         }
 
         .eye-toggle {
