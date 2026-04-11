@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="so">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nidamka Tech Stack Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --text: #333;
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: #fff;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #eee;
+            padding: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        header {
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        section {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            display: flex;
+            align-items: center;
+            color: var(--accent);
+            font-size: 20px;
+            border-left: 4px solid var(--accent);
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        li strong {
+            color: #555;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border: none;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>NIDAMKA TECH STACK</h1>
+                <p>Maamulka Hantida (Warehouse Management System)</p>
+            </div>
+            <div class="date">
+                La soo saaray: <span id="current-date"></span>
+            </div>
+        </header>
+
+        <section>
+            <h2>1. Muuqalka Hore (Frontend)</h2>
+            <ul>
+                <li><strong>Languages:</strong> <span>HTML5, CSS3, JavaScript (ES6+)</span></li>
+                <li><strong>PDF Libraries:</strong> <span>jsPDF, jspdf-autotable</span></li>
+                <li><strong>Icons:</strong> <span>FontAwesome 6.0</span></li>
+                <li><strong>Typography:</strong> <span>Google Fonts (Inter, Roboto)</span></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Mishiinka Shaqada (Backend)</h2>
+            <ul>
+                <li><strong>Core Engine:</strong> <span>Python 3.10+</span></li>
+                <li><strong>Framework:</strong> <span>FastAPI</span></li>
+                <li><strong>Server:</strong> <span>Uvicorn (ASGI)</span></li>
+                <li><strong>Validation:</strong> <span>Pydantic v2</span></li>
+                <li><strong>Logic:</strong> <span>SQLModel (ORM)</span></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Sugidda Amniga (Security)</h2>
+            <ul>
+                <li><strong>Authentication:</strong> <span>JWT Tokens (python-jose)</span></li>
+                <li><strong>Encryption:</strong> <span>BCrypt (passlib)</span></li>
+                <li><strong>Permissions:</strong> <span>Role-Based Access Control (RBAC)</span></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Kaydka Xogta (Database)</h2>
+            <ul>
+                <li><strong>Development:</strong> <span>SQLite (test_warehouse.db)</span></li>
+                <li><strong>Production:</strong> <span>PostgreSQL (Scalable)</span></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Qalabka Kale (Tools)</h2>
+            <ul>
+                <li><strong>Version Control:</strong> <span>Git</span></li>
+                <li><strong>Deployment:</strong> <span>Render / Gunicorn</span></li>
+                <li><strong>Environment:</strong> <span>Python Dotenv</span></li>
+            </ul>
+        </section>
+
+        <div class="footer">
+            &copy; 2026 Nidamka Management System. All Rights Reserved.
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('so-SO', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+
+</html>
